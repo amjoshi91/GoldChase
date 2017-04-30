@@ -29,21 +29,72 @@
 #include "fancyrw.h"
 using namespace std;
 
+
+
+
 //////////GLOBAL VAR//////////
 int result;
 mapBoard *mbs;
 unsigned char* my_copy;
+int new_sockfd;
 int sockfd;
+int s_rows = 0;
+int s_cols = 0;
 int status;
 unsigned char SockPlayer = G_SOCKPLR;
 unsigned char* tempMap;
 ///////////////
 
+void USR1handler(int)
+{
+write(result, "GOT SIG USER 1!\n", sizeof("GOT SIG USER1!\n"));
+
+vector< pair<short,unsigned char> > tempVector;
+  for(short i=0; i<s_rows*s_cols; ++i)
+  {
+    write(result, "inside map size!\n", 20);
+    if(tempMap[i] != my_copy[i])
+    {
+      pair<short,unsigned char> myPair;
+      myPair.first=i;
+      myPair.second=tempMap[i];
+      tempVector.push_back(myPair);
+      my_copy[i]=tempMap[i];
+      write(result, "changed square!\n", 20);
+    }
+  }
+
+  //here iterate through pvec, writing out to socket
+  //testing we will print it:
+  unsigned char byt = 0;
+  if(tempVector.size()>0){
+    write(result, "vectore greater !\n", 15);
+
+      write(new_sockfd,&byt,1);
+      short sizeOfVector=tempVector.size();
+      write(new_sockfd,&sizeOfVector,sizeof(short));
+
+      for(short i=0; i<tempVector.size(); ++i)
+      {
+        write(result, "forloop start!\n", 15);
+
+        cerr << "offset=" << tempVector[i].first;
+        cerr << ", new value=" << tempVector[i].second << endl;
+
+        write(new_sockfd,&tempVector[i].first,sizeof(short));
+        write(new_sockfd,&tempVector[i].second, sizeof(unsigned char));
+        write(result, "forloop end!\n", 15);
+
+      }
+  }
+
+}
+
 
 void runServerDeamon()
 {
-  int s_rows = 0;
-  int s_cols = 0;
+
+
   int i, shmFD;
 
   if(fork() > 0)
@@ -68,6 +119,14 @@ void runServerDeamon()
 
   result = open("/home/aditya/611/in_process/gitData/GoldChase/myPipe", O_RDWR);
   write(result, "99", 2);
+
+  struct sigaction usr1Action;
+  usr1Action.sa_handler=USR1handler;
+  sigemptyset(&usr1Action.sa_mask);
+  usr1Action.sa_flags=0;
+  usr1Action.sa_restorer=NULL ;
+  sigaction(SIGUSR1, &usr1Action, NULL);
+
   shmFD = shm_open("AMJ_mymap", O_RDWR, S_IRUSR|S_IWUSR);
   if(shmFD == -1)
   {
@@ -154,7 +213,6 @@ void runServerDeamon()
 
     struct sockaddr_in client_addr;
     socklen_t clientSize = sizeof(client_addr);
-    int new_sockfd;
     do
      {
        new_sockfd=accept(sockfd, (struct sockaddr*) &client_addr, &clientSize);

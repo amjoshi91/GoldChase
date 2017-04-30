@@ -258,7 +258,7 @@ int main(int argc, char** argv)
     }
     sem_wait(sem);
     processInput(input);
-    //kill(mb->deamonID, SIGUSR1);
+    kill(mb->deamonID, SIGUSR1);
     goldMine.drawMap();
     sem_post(sem);
     if(mb->map[playerPosition]&G_GOLD && !mb->goldFound)

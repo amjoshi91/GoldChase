@@ -33,14 +33,69 @@ int result_c;
 mapBoard* mbc;
 unsigned char* clientCopy;
 int sockfdClient;
+int c_rows=0;
+int c_cols=0;
+unsigned char* tempMap1;
+
+
+
+
+
+
+
+
+void USR1handler_c(int){
+
+	write(result_c, "GOT SIG USER 1!\n", sizeof("GOT SIG USER1!\n"));
+
+	vector< pair<short,unsigned char> > tempVector;
+	  for(short i=0; i<c_rows*c_cols; ++i)
+	  {
+	    write(result_c, "inside map size!\n", 20);
+	    if(tempMap1[i]!= clientCopy[i])
+	    {
+	      pair<short,unsigned char> myPair;
+	      myPair.first=i;
+	      myPair.second=tempMap1[i];
+	      tempVector.push_back(myPair);
+	      clientCopy[i]=tempMap1[i];
+	      write(result_c, "changed square!\n", 20);
+	    }
+	  }
+
+	  //here iterate through pvec, writing out to socket
+	  //testing we will print it:
+	  unsigned char byt = 0;
+	  if(tempVector.size()>0){
+	    write(result_c, "vectore greater !\n", 15);
+
+	      WRITE(sockfdClient,&byt,1);
+	      short sizeOfVector=tempVector.size();
+	      WRITE(sockfdClient,&sizeOfVector,sizeof(short));
+
+	      for(short i=0; i<tempVector.size(); ++i)
+	      {
+	        write(result_c, "forloop start!\n", 15);
+
+	        cerr << "offset=" << tempVector[i].first;
+	        cerr << ", new value=" << tempVector[i].second << endl;
+
+	        WRITE(sockfdClient,&tempVector[i].first,sizeof(short));
+	        WRITE(sockfdClient,&tempVector[i].second, sizeof(unsigned char));
+	        write(result_c, "forloop end!\n", 15);
+
+	      }
+	  }
+
+}
+
 
 
 void runClientDeamon(char *addr)
 {
 
   sem_t *clientSemaphore;
-	int c_rows=0;
-	int c_cols=0;
+
   int status;
 
 
@@ -69,6 +124,13 @@ void runClientDeamon(char *addr)
 //	int sockfdClient; //file descriptor for the socket
 
 	write(result_c, "Client starting\n", sizeof("Client starting\n"));
+
+  struct sigaction usr1Action_c;
+  usr1Action_c.sa_handler=USR1handler_c;
+  sigemptyset(&usr1Action_c.sa_mask);
+  usr1Action_c.sa_flags=0;
+  usr1Action_c.sa_restorer=NULL ;
+  sigaction(SIGUSR1, &usr1Action_c, NULL);
 
 	//change this # between 2000-65k before using
 	const char* portno="42427";
@@ -194,8 +256,7 @@ void runClientDeamon(char *addr)
   if(players_c&G_PLR4)
     mbc->players[4] = 1;
 
- unsigned char* tempMap;
- tempMap=mbc->map;
+ tempMap1=mbc->map;
 
  while(1)
  {
