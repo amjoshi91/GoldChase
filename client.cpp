@@ -63,7 +63,7 @@ void runClientDeamon(char *addr)
 	umask(0);
 	chdir("/");
 
-	result_c=open("/home/aditya/611/gitData/myPipe", O_RDWR);
+	result_c=open("/home/aditya/611/gitData/GoldChase/myPipe", O_RDWR);
 
 	//===================Client Startup==============================
 //	int sockfdClient; //file descriptor for the socket
