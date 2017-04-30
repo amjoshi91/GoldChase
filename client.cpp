@@ -180,7 +180,7 @@ void runClientDeamon(char *addr)
   }
 
   write(result_c, "All written!", 15);
-
+  unsigned char players_c;
   READ(sockfdClient, &players_c, sizeof(unsigned char));
 
   if(players_c&G_PLR0)
