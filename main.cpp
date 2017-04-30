@@ -174,8 +174,15 @@ int main(int argc, char** argv)
 
   if(argc > 1)
   {
-    runClientDeamon(argv[1]);
-    sleep(3);
+    if((shm_fd = shm_open("/AMJ_mymap", O_RDWR,
+    S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR)) == -1)
+      runClientDeamon(argv[1]);
+    while(shm_fd = shm_open("/AMJ_mymap", O_RDWR,
+    S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR)) == -1)
+    {
+      
+    }
+//    sleep(3);
   }
   struct sigaction mapRef;
   mapRef.sa_handler = mapRefresh;
@@ -232,8 +239,8 @@ int main(int argc, char** argv)
   else //Second Player
   {
     sem = sem_open("/mySEM", O_RDWR);
-    shm_fd = shm_open("/AMJ_mymap",O_CREAT|O_RDWR,
-    S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR);
+    //shm_fd = shm_open("/AMJ_mymap",O_CREAT|O_RDWR,
+    //S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR);
     mb=(mapBoard*)mmap(NULL,(noOfRows*noOfCols)+sizeof(mapBoard), PROT_READ|PROT_WRITE, MAP_SHARED, shm_fd, 0);
   //  kill(mb->deamonID, SIGHUP);
   sem_wait(sem);
