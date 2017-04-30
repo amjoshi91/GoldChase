@@ -176,8 +176,21 @@ void runServerDeamon()
       {
         WRITE(new_sockfd,&my_copy[j],sizeof(unsigned char));
       }*/
--
-      WRITE(new_sockfd,&SockPlayer,sizeof(unsigned char));
+
+      unsigned char tempVar = 0;
+      if(mbs->players[0] != 0)
+        tempVar|=G_PLR0;
+      if(mbs->players[1] != 0)
+        tempVar|=G_PLR1;
+      if(mbs->players[2] != 0)
+        tempVar|=G_PLR2;
+      if(mbs->players[3] != 0)
+        tempVar|=G_PLR3;
+      if(mbs->players[4] != 0)
+        tempVar|=G_PLR4;
+
+      tempVar|=SockPlayer;
+      WRITE(new_sockfd, &tempVar,sizeof(unsigned char));
 
       write(result, "Connection estd", 15);
 
