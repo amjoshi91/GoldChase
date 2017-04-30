@@ -181,6 +181,19 @@ void runClientDeamon(char *addr)
 
   write(result_c, "All written!", 15);
 
+  READ(sockfdClient, &players_c, sizeof(unsigned char));
+
+  if(players_c&G_PLR0)
+    mbc->players[0] = 1;
+  if(players_c&G_PLR1)
+    mbc->players[1] = 1;
+  if(players_c&G_PLR2)
+    mbc->players[2] = 1;
+  if(players_c&G_PLR3)
+    mbc->players[3] = 1;
+  if(players_c&G_PLR4)
+    mbc->players[4] = 1;
+
  unsigned char* tempMap;
  tempMap=mbc->map;
 
