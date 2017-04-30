@@ -179,9 +179,15 @@ void runClientDeamon(char *addr)
       write(result_c, " ", 1);
   }
 
+  write(result, "All written!" 15);
+
  unsigned char* tempMap;
  tempMap=mbc->map;
 
+ while(1)
+ {
+
+ }
 
   return;
 }

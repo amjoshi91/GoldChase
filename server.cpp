@@ -66,7 +66,7 @@ void runServerDeamon()
   umask(0);
   chdir("/");
 
-  result = open("/home/aditya/611/in_process/project_5/myPipe", O_RDWR);
+  result = open("/home/aditya/611/in_process/gitData/GoldChase/myPipe", O_RDWR);
   write(result, "99", 2);
   shmFD = shm_open("AMJ_mymap", O_RDWR, S_IRUSR|S_IWUSR);
   if(shmFD == -1)
@@ -183,7 +183,7 @@ void runServerDeamon()
 
       while(1)
       {
-        
+
       }
 }
 
