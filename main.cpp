@@ -174,15 +174,8 @@ int main(int argc, char** argv)
 
   if(argc > 1)
   {
-    if((shm_fd = shm_open("/AMJ_mymap", O_RDWR,
-    S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR)) == -1)
-      runClientDeamon(argv[1]);
-    while((shm_fd = shm_open("/AMJ_mymap", O_RDWR,
-    S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR)) == -1)
-    {
-
-    }
-//    sleep(3);
+    runClientDeamon(argv[1]);
+    sleep(3);
   }
   struct sigaction mapRef;
   mapRef.sa_handler = mapRefresh;
