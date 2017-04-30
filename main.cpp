@@ -177,10 +177,10 @@ int main(int argc, char** argv)
     if((shm_fd = shm_open("/AMJ_mymap", O_RDWR,
     S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR)) == -1)
       runClientDeamon(argv[1]);
-    while(shm_fd = shm_open("/AMJ_mymap", O_RDWR,
+    while((shm_fd = shm_open("/AMJ_mymap", O_RDWR,
     S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR)) == -1)
     {
-      
+
     }
 //    sleep(3);
   }
