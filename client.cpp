@@ -260,9 +260,36 @@ void runClientDeamon(char *addr)
 
  while(1)
  {
+   sem_t *my_sem_ptr;
+   unsigned char byte;
+   READ(sockfdClient, &byte, 1);
 
- }
+   if(byte==0)
+   {
+     short vectorSize, offset;
+     write(result_c, "map chenge !\n",20);
+     unsigned char newLoc;
+     READ(sockfdClient, &vectorSize, sizeof(short));
+     write(result_c, "map chenge after read !\n",25);
+     for(short i=0; i<vectorSize; ++i)
+     {
+       write(result_c, "map chenge inside for!\n",25);
+       READ(sockfdClient,&offset,sizeof(short));
+       READ(sockfdClient,&newLoc, sizeof(unsigned char));
+       mbc->map[offset]=newLoc;
+       clientCopy[offset]=newLoc;
 
-  return;
+     }
+     write(result_c, "map chenge drawMap !\n",25);
+     for(int m=0;m<5;m++)
+     {
+       if(mbc->players[m]!=0)
+       {
+         kill(mbc->players[m],SIGUSR1);
+       }
+     }
+   }
 }
+}
+
 #endif
