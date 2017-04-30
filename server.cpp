@@ -181,6 +181,10 @@ void runServerDeamon()
 
       write(result, "Connection estd", 15);
 
+      while(1)
+      {
+        
+      }
 }
 
 #endif

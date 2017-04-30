@@ -160,15 +160,15 @@ void runClientDeamon(char *addr)
 	mbc->cols=c_cols;
 	unsigned char copy;
 
-        READ(sockfdClient,clientCopy,c_rows*c_cols);
-        memcpy(mbc->map,clientCopy, c_rows*c_cols);
-/*	for(int i=0;i<areaOfMap;i++)
+//        READ(sockfdClient, clientCopy, c_rows*c_cols);
+//        memcpy(mbc->map, clientCopy, c_rows*c_cols);
+	for(int i=0;i<areaOfMap;i++)
 	{
 		READ(sockfdClient,&copy,sizeof(unsigned char));
 		mbc->map[i]=copy;
 		clientCopy[i]=copy;
 	}
-*/
+
   for(int i = 0; i < c_rows*c_cols; i++)
   {
     if(clientCopy[i]&G_WALL)
