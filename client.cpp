@@ -63,7 +63,7 @@ void runClientDeamon(char *addr)
 	umask(0);
 	chdir("/");
 
-	result_c=open("/home/aditya/611/project_5/myPipe", O_RDWR);
+	result_c=open("/home/aditya/611/gitData/myPipe", O_RDWR);
 
 	//===================Client Startup==============================
 //	int sockfdClient; //file descriptor for the socket
@@ -164,7 +164,7 @@ void runClientDeamon(char *addr)
 //        memcpy(mbc->map, clientCopy, c_rows*c_cols);
 	for(int i=0;i<areaOfMap;i++)
 	{
-		READ(sockfdClient,&copy,sizeof(unsigned char));
+		READ(sockfdClient, &copy,sizeof(unsigned char));
 		mbc->map[i]=copy;
 		clientCopy[i]=copy;
 	}
