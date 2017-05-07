@@ -235,10 +235,10 @@ int main(int argc, char** argv)
     shm_fd = shm_open("/AMJ_mymap",O_CREAT|O_RDWR,
     S_IROTH|S_IWOTH|S_IRGRP|S_IWGRP|S_IRUSR|S_IWUSR);
     mb=(mapBoard*)mmap(NULL,(noOfRows*noOfCols)+sizeof(mapBoard), PROT_READ|PROT_WRITE, MAP_SHARED, shm_fd, 0);
-    kill(mb->deamonID, SIGHUP);
   sem_wait(sem);
   write(99, "placing player",getpid());
   setPlayer();
+  kill(mb->deamonID, SIGHUP);
   sem_post(sem);
   }
 

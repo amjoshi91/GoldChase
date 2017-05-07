@@ -311,11 +311,14 @@
 
     if(byte & G_SOCKPLR)
     {
+      write(result, "Got the bocha sighup chya aaicha tanna", 30);
       unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
       for(int i =0; i < 5; i++)
       {
+
         if(byte&arr[i] && mbs->players[i] == 0)
         {
+          write(result, &i, sizeof(int));
           mbs->players[i] = mbs->deamonID;
         }
         else if(!byte&arr[i] && mbs->players[i] != 0)
@@ -323,7 +326,6 @@
           mbs->players[i] = 0;
         }
       }
-
     }
   }
 }
