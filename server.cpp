@@ -315,7 +315,6 @@
       unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
       for(int i =0; i < 5; i++)
       {
-
         if(byte&arr[i] && mbs->players[i] == 0)
         {
           write(result, &i, sizeof(int));
@@ -326,7 +325,6 @@
           mbs->players[i] = 0;
         }
       }
-      
     }
   }
 }

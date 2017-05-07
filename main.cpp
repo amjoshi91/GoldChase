@@ -183,6 +183,8 @@ int main(int argc, char** argv)
   mapRef.sa_flags = 0;
   mapRef.sa_restorer = NULL;
   sigaction(SIGUSR1, &mapRef, NULL);
+  sigaction(SIGHUP, &mapRef, NULL);
+
 
   struct sigaction cleanup;
   cleanup.sa_handler = clean_it_up;
@@ -191,7 +193,6 @@ int main(int argc, char** argv)
   cleanup.sa_restorer = NULL;
   sigaction(SIGINT, &cleanup, NULL);
   sigaction(SIGTERM, &cleanup, NULL);
-  sigaction(SIGHUP, &mapRef, NULL);
 
 
 
@@ -227,7 +228,7 @@ int main(int argc, char** argv)
 
     if(mb->deamonID == 0)
       runServerDeamon();
-    //kill(mb->deamonID, SIGHUP);
+    kill(mb->deamonID, SIGHUP);
 
   }
 
@@ -461,6 +462,7 @@ void setPlayer()
     {
       if(mb->players[i] != 0)
         kill(mb->players[i], SIGUSR1);
+        kill(mb->players[i], SIGHUP);
     }
     mq_name = "/aditya0";
     read_queue();
@@ -474,6 +476,8 @@ void setPlayer()
     {
       if(mb->players[i] != 0)
         kill(mb->players[i], SIGUSR1);
+        kill(mb->players[i], SIGHUP);
+
     }
     mq_name = "/aditya1";
     read_queue();
@@ -487,6 +491,8 @@ void setPlayer()
     {
       if(mb->players[i] != 0)
         kill(mb->players[i], SIGUSR1);
+        kill(mb->players[i], SIGHUP);
+
     }
     mq_name = "/aditya2";
     read_queue();
@@ -500,6 +506,8 @@ void setPlayer()
     {
       if(mb->players[i] != 0)
         kill(mb->players[i], SIGUSR1);
+        kill(mb->players[i], SIGHUP);
+
     }
     mq_name = "/aditya3";
     read_queue();
@@ -513,6 +521,8 @@ void setPlayer()
     {
       if(mb->players[i] != 0)
         kill(mb->players[i], SIGUSR1);
+        kill(mb->players[i], SIGHUP);
+
     }
     mq_name = "/aditya4";
   //  read_queue();
