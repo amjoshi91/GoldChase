@@ -191,7 +191,9 @@ int main(int argc, char** argv)
   cleanup.sa_restorer = NULL;
   sigaction(SIGINT, &cleanup, NULL);
   sigaction(SIGTERM, &cleanup, NULL);
-  sigaction(SIGHUP, &cleanup, NULL);
+  sigaction(SIGHUP, &mapRef, NULL);
+
+
 
 
   int shm_fd;
