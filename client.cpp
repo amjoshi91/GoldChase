@@ -36,13 +36,25 @@ int sockfdClient;
 int c_rows=0;
 int c_cols=0;
 unsigned char* tempMap1;
+unsigned char SockPlayer_c;
 
 
-
-
-
-
-
+void HUPhandler_c(int)
+{
+	write(result_c, "GOT SIG HUP!\n", sizeof("GOT SIG HUP!\n"));
+	SockPlayer_c=G_SOCKPLR;
+	if(mbc->players[0]!=0)
+		SockPlayer_c|=G_PLR0;
+	if(mbc->players[1]!=0)
+		SockPlayer_c|=G_PLR1;
+	if(mbc->players[2]!=0)
+		SockPlayer_c|=G_PLR2;
+	if(mbc->players[3]!=0)
+		SockPlayer_c|=G_PLR3;
+	if(mbc->players[4]!=0)
+		SockPlayer_c|=G_PLR4;
+	WRITE(sockfdClient,&SockPlayer_c,sizeof(unsigned char));
+}
 
 void USR1handler_c(int){
 
@@ -124,6 +136,13 @@ void runClientDeamon(char *addr)
 //	int sockfdClient; //file descriptor for the socket
 
 	write(result_c, "Client starting\n", sizeof("Client starting\n"));
+
+	struct sigaction hupAction_c;
+	hupAction_c.sa_handler=HUPhandler_c;
+	sigemptyset(&hupAction_c.sa_mask);
+	hupAction_c.sa_flags=0;
+	hupAction_c.sa_restorer=NULL ;
+	sigaction(SIGHUP, &hupAction_c, NULL);
 
   struct sigaction usr1Action_c;
   usr1Action_c.sa_handler=USR1handler_c;

@@ -36,7 +36,7 @@
   int result;
   mapBoard *mbs;
   unsigned char* my_copy;
-  int new_sockfd;
+  int serverSockFD;
   int sockfd;
   int s_rows = 0;
   int s_cols = 0;
@@ -44,6 +44,23 @@
   unsigned char SockPlayer = G_SOCKPLR;
   unsigned char* tempMap;
   ///////////////
+
+  void HUPhandler(int)
+  {
+    write(result, "GOT SIG HUP!\n", sizeof("GOT SIG HUP!\n"));
+    SockPlayer=G_SOCKPLR;
+    if(mbs->players[0]!=0)
+      SockPlayer|=G_PLR0;
+    if(mbs->players[1]!=0)
+      SockPlayer|=G_PLR1;
+    if(mbs->players[2]!=0)
+      SockPlayer|=G_PLR2;
+    if(mbs->players[3]!=0)
+      SockPlayer|=G_PLR3;
+    if(mbs->players[4]!=0)
+      SockPlayer|=G_PLR4;
+    WRITE(serverSockFD,&SockPlayer,sizeof(unsigned char));
+  }
 
   void USR1handler(int)
   {
@@ -70,9 +87,9 @@
     if(tempVector.size()>0){
       write(result, "vectore greater !\n", 15);
 
-      write(new_sockfd,&byt,1);
+      write(serverSockFD,&byt,1);
       short sizeOfVector=tempVector.size();
-      write(new_sockfd,&sizeOfVector,sizeof(short));
+      write(serverSockFD,&sizeOfVector,sizeof(short));
 
       for(short i=0; i<tempVector.size(); ++i)
       {
@@ -81,8 +98,8 @@
         cerr << "offset=" << tempVector[i].first;
         cerr << ", new value=" << tempVector[i].second << endl;
 
-        write(new_sockfd,&tempVector[i].first,sizeof(short));
-        write(new_sockfd,&tempVector[i].second, sizeof(unsigned char));
+        write(serverSockFD,&tempVector[i].first,sizeof(short));
+        write(serverSockFD,&tempVector[i].second, sizeof(unsigned char));
         write(result, "forloop end!\n", 15);
 
       }
@@ -126,6 +143,13 @@
     usr1Action.sa_flags=0;
     usr1Action.sa_restorer=NULL ;
     sigaction(SIGUSR1, &usr1Action, NULL);
+
+    struct sigaction hupAction;
+    hupAction.sa_handler=HUPhandler;
+    sigemptyset(&hupAction.sa_mask);
+    hupAction.sa_flags=0;
+    hupAction.sa_restorer=NULL ;
+    sigaction(SIGHUP, &hupAction, NULL);
 
     shmFD = shm_open("AMJ_mymap", O_RDWR, S_IRUSR|S_IWUSR);
     if(shmFD == -1)
@@ -215,24 +239,24 @@
     socklen_t clientSize = sizeof(client_addr);
     do
     {
-      new_sockfd=accept(sockfd, (struct sockaddr*) &client_addr, &clientSize);
-    } while(new_sockfd==-1 && errno==EINTR);
+      serverSockFD=accept(sockfd, (struct sockaddr*) &client_addr, &clientSize);
+    } while(serverSockFD==-1 && errno==EINTR);
 
-    if(new_sockfd==-1 && errno!=EINTR)
+    if(serverSockFD==-1 && errno!=EINTR)
     {
       perror("accept");
       exit(1);
     }
     //read & write to the socket
 
-    WRITE(new_sockfd,&s_rows,sizeof(int));
-    WRITE(new_sockfd,&s_cols,sizeof(int));
+    WRITE(serverSockFD,&s_rows,sizeof(int));
+    WRITE(serverSockFD,&s_cols,sizeof(int));
 
     //Send the local copy to client
-    WRITE(new_sockfd, my_copy, s_rows*s_cols);
+    WRITE(serverSockFD, my_copy, s_rows*s_cols);
     /*for(int j=0;j<s_rows*s_cols;j++)
     {
-    WRITE(new_sockfd,&my_copy[j],sizeof(unsigned char));
+    WRITE(serverSockFD,&my_copy[j],sizeof(unsigned char));
   }*/
 
   unsigned char tempVar = 0;
@@ -248,7 +272,7 @@
   tempVar|=G_PLR4;
 
   tempVar|=SockPlayer;
-  WRITE(new_sockfd, &tempVar,sizeof(unsigned char));
+  WRITE(serverSockFD, &tempVar,sizeof(unsigned char));
 
   write(result, "Connection estd", 15);
 
@@ -256,20 +280,20 @@
   {
     sem_t *my_sem_ptr;
     unsigned char byte;
-    READ(new_sockfd, &byte, 1);
+    READ(serverSockFD, &byte, 1);
 
     if(byte==0)
     {
       short vectorSize, offset;
       write(result, "map chenge !\n",20);
       unsigned char newLoc;
-      READ(new_sockfd, &vectorSize, sizeof(short));
+      READ(serverSockFD, &vectorSize, sizeof(short));
       write(result, "map chenge after read !\n",25);
       for(short i=0; i<vectorSize; ++i)
       {
         write(result, "map chenge inside for!\n",25);
-        READ(new_sockfd,&offset,sizeof(short));
-        READ(new_sockfd,&newLoc, sizeof(unsigned char));
+        READ(serverSockFD,&offset,sizeof(short));
+        READ(serverSockFD,&newLoc, sizeof(unsigned char));
         mbs->map[offset]=newLoc;
         my_copy[offset]=newLoc;
 
@@ -282,8 +306,26 @@
           kill(mbs->players[m],SIGUSR1);
         }
       }
+    }
+
+
+    if(byte & G_SOCKPLR)
+    {
+      unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
+      for(int i =0; i < 5; i++)
+      {
+        if(byte&arr[i] && mbs->players[i] == 0)
+        {
+          mbs->players[i] = mbs->deamonID;
+        }
+        else if(!byte&arr[i] && mbs->players[i] != 0)
+        {
+          mbs->players[i] = 0;
+        }
       }
+
     }
   }
+}
 
   #endif
