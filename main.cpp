@@ -228,7 +228,7 @@ int main(int argc, char** argv)
 
     if(mb->deamonID == 0)
       runServerDeamon();
-    kill(mb->deamonID, SIGHUP);
+    //kill(mb->deamonID, SIGHUP);
 
   }
 
@@ -241,7 +241,8 @@ int main(int argc, char** argv)
   sem_wait(sem);
   write(99, "placing player",getpid());
   setPlayer();
-  kill(mb->deamonID, SIGHUP);
+  //kill(mb->deamonID, SIGHUP);
+
   sem_post(sem);
   }
 

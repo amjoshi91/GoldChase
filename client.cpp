@@ -308,6 +308,24 @@ void runClientDeamon(char *addr)
        }
      }
    }
+
+	 if(byte & G_SOCKPLR)
+	 {
+		 write(result_c, "Got the bocha sighup chya aaicha tanna", 30);
+		 unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
+		 for(int i =0; i < 5; i++)
+		 {
+			 if(byte&arr[i] && mbc->players[i] == 0)
+			 {
+				 write(result_c, &i, sizeof(int));
+				 mbc->players[i] = mbc->deamonID;
+			 }
+			 else if(!byte&arr[i] && mbc->players[i] != 0)
+			 {
+				 mbc->players[i] = 0;
+			 }
+		 }
+	 }
 }
 }
 
