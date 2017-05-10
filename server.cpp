@@ -26,6 +26,7 @@
   #include <signal.h>
   #include <sstream>
   #include <time.h>
+  #include <string>
   #include "fancyrw.h"
   using namespace std;
 
@@ -292,11 +293,13 @@
       }
       for(int i = 0; i < 5; i++)
       {
-        write(result, &i, sizeof(int));
+        //write(result, to_string(i).c_str(), to_string(i).length());
         if(mbs->players[i] != 0 && mbs->players[i] != mbs->deamonID)
         {
-          write(result, "in if:", 7);
-          write(result, &i, sizeof(int));
+          //write(result, "in if:", 7);
+          //write(result, to_string(i).c_str(), to_string(i).length());
+          WRITE(result, to_string(mbs->players[i]).c_str(), to_string(mbs->players[i]).length());
+          fsync(result);
           kill(mbs->players[i], SIGUSR1);
         }
       }

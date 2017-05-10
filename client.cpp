@@ -105,7 +105,6 @@ void runClientDeamon(char *addr)
 
 	if(fork()>0)//I'm the parent, leave the function
 	{
-    sleep(5);
     return;
 	}
 
