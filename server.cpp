@@ -292,8 +292,13 @@
       }
       for(int i = 0; i < 5; i++)
       {
+        write(result, &i, sizeof(int));
         if(mbs->players[i] != 0 && mbs->players[i] != mbs->deamonID)
+        {
+          write(result, "in if:", 7);
+          write(result, &i, sizeof(int));
           kill(mbs->players[i], SIGUSR1);
+        }
       }
     }
   }
