@@ -290,6 +290,11 @@
           mbs->players[i] = 0;
         }
       }
+      for(int i = 0; i < 5; i++)
+      {
+        if(mbs->players[i] != 0 && mbs->players[i] != mbs->deamonID)
+          kill(mbs->players[i], SIGUSR1);
+      }
     }
   }
 }
