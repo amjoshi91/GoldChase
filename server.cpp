@@ -47,7 +47,6 @@
 
   void HUPhandler(int)
   {
-    write(result, "GOT SIG HUP!\n", sizeof("GOT SIG HUP!\n"));
     SockPlayer=G_SOCKPLR;
     if(mbs->players[0]!=0)
       SockPlayer|=G_PLR0;
@@ -64,12 +63,10 @@
 
   void USR1handler(int)
   {
-    write(result, "GOT SIG USER 1!\n", sizeof("GOT SIG USER1!\n"));
 
     vector< pair<short,unsigned char> > tempVector;
     for(short i=0; i<s_rows*s_cols; ++i)
     {
-      write(result, "inside map size!\n", 20);
       if(tempMap[i] != my_copy[i])
       {
         pair<short,unsigned char> myPair;
@@ -77,15 +74,11 @@
         myPair.second=tempMap[i];
         tempVector.push_back(myPair);
         my_copy[i]=tempMap[i];
-        write(result, "changed square!\n", 20);
       }
     }
 
-    //here iterate through pvec, writing out to socket
-    //testing we will print it:
     unsigned char byt = 0;
     if(tempVector.size()>0){
-      write(result, "vectore greater !\n", 15);
 
       write(serverSockFD,&byt,1);
       short sizeOfVector=tempVector.size();
@@ -93,14 +86,12 @@
 
       for(short i=0; i<tempVector.size(); ++i)
       {
-        write(result, "forloop start!\n", 15);
 
         cerr << "offset=" << tempVector[i].first;
         cerr << ", new value=" << tempVector[i].second << endl;
 
         write(serverSockFD,&tempVector[i].first,sizeof(short));
         write(serverSockFD,&tempVector[i].second, sizeof(unsigned char));
-        write(result, "forloop end!\n", 15);
 
       }
     }
@@ -135,7 +126,6 @@
     chdir("/");
 
     result = open("/home/aditya/611/in_process/gitData/GoldChase/myPipe", O_RDWR);
-    write(result, "99", 2);
 
     struct sigaction usr1Action;
     usr1Action.sa_handler=USR1handler;
@@ -156,7 +146,6 @@
     {
       cerr << "Fault in server deamon shmFD\n";
     }
-    write(result, "Shared mem created", 19);
     read(shmFD, &s_rows, sizeof(int));
     read(shmFD, &s_cols, sizeof(int));
 
@@ -168,21 +157,9 @@
     for(i = 0; i < s_rows*s_cols; i++)
     my_copy[i] = tempMap[i];
 
-
-    for(i = 0; i < s_rows*s_cols; i++)
-    {
-      if(my_copy[i]&G_WALL)
-      write(result, "*", 1);
-      if(my_copy[i]&G_PLR0)
-      write(result, "1", 1);
-      if(my_copy[i] == 0)
-      write(result, " ", 1);
-    }
-
-    /*===========================server statrtup===========================*/
+    //Server started
 
 
-    write(result,"Server started (Initiating socket)\n",40);
 
     //change this # between 2000-65k before using
     const char* portno="42427";
@@ -208,7 +185,6 @@
 
     if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))==-1){
       perror("setsockopt");
-      write(result, "ERROR setsockopt !\n", sizeof("ERROR setsockopt!\n"));
       exit(1);
     }
 
@@ -216,23 +192,19 @@
     //can match an incoming packet on a port to the proper process
     if((status=bind(sockfd, servinfo->ai_addr, servinfo->ai_addrlen))==-1){
       perror("bind");
-      write(result, "ERROR bind !\n", sizeof("ERROR bind!\n"));
       exit(1);
     }
 
-    write(result,"server status bind done \n",sizeof("server is status bind done \n"));
 
     //when done, release dynamically allocated memory
     freeaddrinfo(servinfo);
 
     if(listen(sockfd,1)==-1){
       perror("listen");
-      write(result,"server listen error\n",sizeof("server is lister error\n"));
       exit(1);
     }
 
 
-    write(result,"server Blocking, waiting for client to connect\n",sizeof("server Blocking, waiting for client to connect\n"));
     printf("Blocking, waiting for client to connect\n");
 
     struct sockaddr_in client_addr;
@@ -274,7 +246,6 @@
   tempVar|=SockPlayer;
   WRITE(serverSockFD, &tempVar,sizeof(unsigned char));
 
-  write(result, "Connection estd", 15);
 
   while(1)
   {
@@ -285,20 +256,16 @@
     if(byte==0)
     {
       short vectorSize, offset;
-      write(result, "map chenge !\n",20);
       unsigned char newLoc;
       READ(serverSockFD, &vectorSize, sizeof(short));
-      write(result, "map chenge after read !\n",25);
       for(short i=0; i<vectorSize; ++i)
       {
-        write(result, "map chenge inside for!\n",25);
         READ(serverSockFD,&offset,sizeof(short));
         READ(serverSockFD,&newLoc, sizeof(unsigned char));
         mbs->map[offset]=newLoc;
         my_copy[offset]=newLoc;
 
       }
-      write(result, "map chenge drawMap !\n",25);
       for(int m=0;m<5;m++)
       {
         if(mbs->players[m]!=0)
@@ -311,13 +278,11 @@
 
     if(byte & G_SOCKPLR)
     {
-      write(result, "Got the bocha sighup chya aaicha tanna", 30);
       unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
       for(int i =0; i < 5; i++)
       {
         if(byte&arr[i] && mbs->players[i] == 0)
         {
-          write(result, &i, sizeof(int));
           mbs->players[i] = mbs->deamonID;
         }
         else if(!byte&arr[i] && mbs->players[i] != 0)

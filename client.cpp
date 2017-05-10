@@ -41,7 +41,6 @@ unsigned char SockPlayer_c;
 
 void HUPhandler_c(int)
 {
-	write(result_c, "GOT SIG HUP!\n", sizeof("GOT SIG HUP!\n"));
 	SockPlayer_c=G_SOCKPLR;
 	if(mbc->players[0]!=0)
 		SockPlayer_c|=G_PLR0;
@@ -58,12 +57,10 @@ void HUPhandler_c(int)
 
 void USR1handler_c(int){
 
-	write(result_c, "GOT SIG USER 1!\n", sizeof("GOT SIG USER1!\n"));
 
 	vector< pair<short,unsigned char> > tempVector;
 	  for(short i=0; i<c_rows*c_cols; ++i)
 	  {
-	    write(result_c, "inside map size!\n", 20);
 	    if(tempMap1[i]!= clientCopy[i])
 	    {
 	      pair<short,unsigned char> myPair;
@@ -71,7 +68,6 @@ void USR1handler_c(int){
 	      myPair.second=tempMap1[i];
 	      tempVector.push_back(myPair);
 	      clientCopy[i]=tempMap1[i];
-	      write(result_c, "changed square!\n", 20);
 	    }
 	  }
 
@@ -79,7 +75,6 @@ void USR1handler_c(int){
 	  //testing we will print it:
 	  unsigned char byt = 0;
 	  if(tempVector.size()>0){
-	    write(result_c, "vectore greater !\n", 15);
 
 	      WRITE(sockfdClient,&byt,1);
 	      short sizeOfVector=tempVector.size();
@@ -87,15 +82,12 @@ void USR1handler_c(int){
 
 	      for(short i=0; i<tempVector.size(); ++i)
 	      {
-	        write(result_c, "forloop start!\n", 15);
 
 	        cerr << "offset=" << tempVector[i].first;
 	        cerr << ", new value=" << tempVector[i].second << endl;
 
 	        WRITE(sockfdClient,&tempVector[i].first,sizeof(short));
 	        WRITE(sockfdClient,&tempVector[i].second, sizeof(unsigned char));
-	        write(result_c, "forloop end!\n", 15);
-
 	      }
 	  }
 
@@ -132,10 +124,8 @@ void runClientDeamon(char *addr)
 
 	result_c=open("/home/aditya/611/gitData/GoldChase/myPipe", O_RDWR);
 
-	//===================Client Startup==============================
-//	int sockfdClient; //file descriptor for the socket
+//CLient starting
 
-	write(result_c, "Client starting\n", sizeof("Client starting\n"));
 
 	struct sigaction hupAction_c;
 	hupAction_c.sa_handler=HUPhandler_c;
@@ -159,47 +149,35 @@ void runClientDeamon(char *addr)
 	hints.ai_family = AF_UNSPEC; //don't care. Either IPv4 or IPv6
 	hints.ai_socktype=SOCK_STREAM; // TCP stream sockets
 
-	write(result_c, "client addrinfo Done !\n", sizeof("Client addrinfo Done !\n"));
 
 	struct addrinfo *servinfo;
 	//instead of "localhost", it could by any domain name
 	if((status=getaddrinfo(addr, portno, &hints, &servinfo))==-1){
 			fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
-			write(result_c, "ERROR getaddrinfo error: !\n", sizeof("ERROR getaddrinfo error:!\n"));
 	  	exit(1);
 		}
 
-	write(result_c, "Client getaddrinfo Done!\n", sizeof("Client getaddrinfo Done !\n"));
 
 	sockfdClient=socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-
-	write(result_c, "Client next step !\n", sizeof("Client next step !\n"));
 
 	if((status=connect(sockfdClient, servinfo->ai_addr, servinfo->ai_addrlen))==-1)
 	{
 		perror("connect");
-		write(result_c, "ERROR connect: !\n", sizeof("ERROR connect:!\n"));
 	//	exit(1);
 	}
 
-	write(result_c, "Client after connect Done !\n", sizeof("Client after connect Done !\n"));
 
-	//release the information allocated by getaddrinfo()
 	freeaddrinfo(servinfo);
-	write(result_c, "Client freeaddrinfo Done\n", sizeof("Client freeaddrinfo Done\n"));
 
 	int err=READ(sockfdClient,&c_rows,sizeof(int));
 	READ(sockfdClient,&c_cols,sizeof(int));
 	if(err==-1){
-		write(result_c, "ERROR read: !\n", sizeof("ERROR read:!\n"));
 	}
-	write(result_c,&c_rows, sizeof(c_rows));
 
 
 
 
 
-	write(result_c, "Now semaphore will be created: !\n", sizeof("Now semaphore will be created:!\n"));
 
 	clientSemaphore = sem_open(
 			"/mySEM",
@@ -214,9 +192,6 @@ void runClientDeamon(char *addr)
 		if(errno==EEXIST)
 		{perror("semphone present inside first palyer ");}
 	}
-
-	write(result_c, "semaphore created in client daemon !\n", sizeof("semaphore created in client daemon!\n"));
-
 
 	int ret=shm_open("AMJ_mymap", O_CREAT|O_RDWR,  S_IRUSR | S_IWUSR);
 
@@ -250,17 +225,7 @@ void runClientDeamon(char *addr)
 		clientCopy[i]=copy;
 	}
 
-  for(int i = 0; i < c_rows*c_cols; i++)
-  {
-    if(clientCopy[i]&G_WALL)
-      write(result_c, "*", 1);
-    if(clientCopy[i]&G_PLR0)
-      write(result_c, "1", 1);
-    if(clientCopy[i] == 0)
-      write(result_c, " ", 1);
-  }
 
-  write(result_c, "All written!", 15);
   unsigned char players_c;
   READ(sockfdClient, &players_c, sizeof(unsigned char));
 
@@ -286,20 +251,16 @@ void runClientDeamon(char *addr)
    if(byte==0)
    {
      short vectorSize, offset;
-     write(result_c, "map chenge !\n",20);
      unsigned char newLoc;
      READ(sockfdClient, &vectorSize, sizeof(short));
-     write(result_c, "map chenge after read !\n",25);
      for(short i=0; i<vectorSize; ++i)
      {
-       write(result_c, "map chenge inside for!\n",25);
        READ(sockfdClient,&offset,sizeof(short));
        READ(sockfdClient,&newLoc, sizeof(unsigned char));
        mbc->map[offset]=newLoc;
        clientCopy[offset]=newLoc;
 
      }
-     write(result_c, "map chenge drawMap !\n",25);
      for(int m=0;m<5;m++)
      {
        if(mbc->players[m]!=0)
@@ -311,22 +272,20 @@ void runClientDeamon(char *addr)
 
 	 if(byte & G_SOCKPLR)
 	 {
-		 write(result_c, "Got the bocha sighup chya aaicha tanna", 30);
 		 unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
 		 for(int i =0; i < 5; i++)
 		 {
 			 if(byte&arr[i] && mbc->players[i] == 0)
 			 {
-				 write(result_c, &i, sizeof(int));
 				 mbc->players[i] = mbc->deamonID;
 			 }
 			 else if(!byte&arr[i] && mbc->players[i] != 0)
-			 {
+			 	{
 				 mbc->players[i] = 0;
-			 }
-		 }
-	 }
-}
+			 	}
+		 	}
+	 	}
+	}
 }
 
 #endif
