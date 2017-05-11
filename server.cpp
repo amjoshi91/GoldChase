@@ -60,11 +60,18 @@
     if(mbs->players[4]!=0)
       SockPlayer|=G_PLR4;
     WRITE(serverSockFD,&SockPlayer,sizeof(unsigned char));
+    if(SockPlayer==G_SOCKPLR)
+    {
+      sem_unlink("/mySEM");
+      shm_unlink("/AMJ_mymap");
+      unsigned char temp=G_SOCKPLR;
+      //WRITE(serverSockFD,&temp,sizeof(unsigned char));
+      exit(0);
   }
+}
 
   void USR1handler(int)
   {
-
     vector< pair<short,unsigned char> > tempVector;
     for(short i=0; i<s_rows*s_cols; ++i)
     {

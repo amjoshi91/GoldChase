@@ -35,6 +35,7 @@ unsigned char* clientCopy;
 int sockfdClient;
 int c_rows=0;
 int c_cols=0;
+sem_t *clientSemaphore;
 unsigned char* tempMap1;
 unsigned char SockPlayer_c;
 
@@ -53,6 +54,15 @@ void HUPhandler_c(int)
 	if(mbc->players[4]!=0)
 		SockPlayer_c|=G_PLR4;
 	WRITE(sockfdClient,&SockPlayer_c,sizeof(unsigned char));
+	if(SockPlayer_c == G_SOCKPLR)
+		{
+			sem_close(clientSemaphore);
+			sem_unlink("/mySEM");
+			shm_unlink("/AMJ_mymap");
+			unsigned char temp=G_SOCKPLR;
+			//WRITE(sockfdClient,&temp,sizeof(unsigned char));
+			exit(0);
+		}
 }
 
 void USR1handler_c(int){
@@ -98,7 +108,6 @@ void USR1handler_c(int){
 void runClientDeamon(char *addr)
 {
 
-  sem_t *clientSemaphore;
 
   int status;
 
