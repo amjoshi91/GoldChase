@@ -49,13 +49,14 @@ int noOfRows, noOfCols, noOfGold, randomNum;
 int shm_fd, playerPosition;
 mqd_t readqueue_fd;
 string mq_name = "/none";
-int currentPlayer;
+int currentPlayer, result_m;
 sem_t* sem;
 Map *ptr = NULL;
 mapBoard  *mb;
 
 void mapRefresh(int)
 {
+  write(result_m, "mapRef called", sizeof("mapRef called"));
   if(ptr != NULL)
     ptr->drawMap();
 }
@@ -171,7 +172,7 @@ void clean_it_up(int)
 /////////////////////////////////////////////////////////////////
 int main(int argc, char** argv)
 {
-
+  result_m = open("/home/aditya/611/in_process/gitData/GoldChase/myPipe", O_RDWR);
   if(argc > 1)
   {
     runClientDeamon(argv[1]);
