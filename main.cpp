@@ -255,7 +255,7 @@ int main(int argc, char** argv)
     }
   }
   }
-
+  kill(mb->deamonID, SIGUSR1);
   Map goldMine((const unsigned char*)mb->map, mb->rows, mb->cols);
   ptr = &goldMine;
   sleep(2);
