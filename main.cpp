@@ -243,21 +243,14 @@ int main(int argc, char** argv)
   write(99, "placing player",getpid());
   setPlayer();
   sem_post(sem);
-  //if(mb->deamonID != 0)
-  //{
-    //kill(mb->deamonID, SIGHUP);
-    kill(mb->deamonID, SIGUSR1);
-
-  //}
-  /*for(int i = 0; i < 5; i++)
+  if(mb->deamonID != 0)
   {
-    if(mb->players[i] != 0 && mb->players[i] != getpid())
-    {
-      kill(mb->players[i], SIGUSR1);
-    }
-  }*/
+    kill(mb->deamonID, SIGHUP);
   }
-  //kill(mb->deamonID, SIGUSR1);
+
+
+  kill(mb->deamonID, SIGUSR1);
+  }
   Map goldMine((const unsigned char*)mb->map, mb->rows, mb->cols);
   ptr = &goldMine;
   sleep(2);
@@ -265,7 +258,7 @@ int main(int argc, char** argv)
 
   while(true)
   {
-    kill(mb->deamonID, SIGUSR1);
+    //kill(mb->deamonID, SIGUSR1);
     input = goldMine.getKey();
     if(input == 'Q')
     {
