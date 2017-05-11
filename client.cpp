@@ -39,6 +39,21 @@ sem_t *clientSemaphore;
 unsigned char* tempMap1;
 unsigned char SockPlayer_c;
 
+void tester()
+{
+	write(result_c, "Byte contents are: \n", sizeof("Byte contents are: \n"));
+	if(SockPlayer_c&G_PLR0)
+		write(result_c,"0 ", 2);
+	if(SockPlayer_c&G_PLR1)
+		write(result_c,"1 ", 2);
+	if(SockPlayer_c&G_PLR2)
+		write(result_c,"2 ", 2);
+	if(SockPlayer_c&G_PLR3)
+		write(result_c,"3 ", 2);
+	if(SockPlayer_c&G_PLR4)
+		write(result_c,"4 ", 2);
+	write(result_c, "written entire byte\n\n", sizeof("written entire byte\n\n"));
+}
 
 void HUPhandler_c(int)
 {
@@ -54,7 +69,8 @@ void HUPhandler_c(int)
 	if(mbc->players[4]!=0)
 		SockPlayer_c|=G_PLR4;
 	WRITE(sockfdClient,&SockPlayer_c,sizeof(unsigned char));
-	write(result_c, &SockPlayer_c, sizeof(unsigned char));
+	//write(result_c, &SockPlayer_c, sizeof(unsigned char));
+	tester();
 	if(SockPlayer_c == G_SOCKPLR)
 		{
 			sem_close(clientSemaphore);

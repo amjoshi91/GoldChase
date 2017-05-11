@@ -46,6 +46,23 @@
   unsigned char* tempMap;
   ///////////////
 
+  void tester_s()
+  {
+  	write(result, "Byte contents are: \n", sizeof("Byte contents are: \n"));
+  	if(SockPlayer&G_PLR0)
+  		write(result,"0 ", 2);
+  	if(SockPlayer&G_PLR1)
+  		write(result,"1 ", 2);
+  	if(SockPlayer&G_PLR2)
+  		write(result,"2 ", 2);
+  	if(SockPlayer&G_PLR3)
+  		write(result,"3 ", 2);
+  	if(SockPlayer&G_PLR4)
+  		write(result,"4 ", 2);
+  	write(result, "written entire byte\n\n", sizeof("written entire byte\n\n"));
+  }
+
+
   void HUPhandler(int)
   {
     SockPlayer=G_SOCKPLR;
@@ -60,7 +77,8 @@
     if(mbs->players[4]!=0)
       SockPlayer|=G_PLR4;
     WRITE(serverSockFD,&SockPlayer,sizeof(unsigned char));
-    write(result, &SockPlayer, sizeof(unsigned char));
+    //write(result, &SockPlayer, sizeof(unsigned char));
+    tester_s();
     if(SockPlayer==G_SOCKPLR)
     {
       sem_unlink("/mySEM");
