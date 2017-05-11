@@ -711,7 +711,6 @@ void processInput(int input)
 /////////////////////////////////////////////////////////////////
 void exitFunction()
 {
-  sem_wait(sem);
   bool checker = true;
   mb->players[currentPlayer] = 0;
   for(int i = 0; i < 5; i++)
@@ -719,8 +718,9 @@ void exitFunction()
     if(mb->players[i] != 0)
       checker = false;
   }
-
+  sem_wait(sem);
   mb->map[playerPosition]&=(~thisPlayer);
+  sem_post(sem);
   /*mb->players&=(~thisPlayer);
   write(99, &mb->players, getpid());*/
   for(int i = 0; i < 5; i++)
@@ -740,9 +740,8 @@ void exitFunction()
   if(currentPlayer == 4)
     mq_unlink("/aditya4");
   kill(mb->deamonID, SIGHUP);
-  sem_post(sem);
   //if(mb->players == 0)
-  kill(mb->deamonID, SIGUSR1);
+  //kill(mb->deamonID, SIGUSR1);
   if(checker)
   {
     sem_close(sem);
