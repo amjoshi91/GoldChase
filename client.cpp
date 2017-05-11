@@ -54,6 +54,7 @@ void HUPhandler_c(int)
 	if(mbc->players[4]!=0)
 		SockPlayer_c|=G_PLR4;
 	WRITE(sockfdClient,&SockPlayer_c,sizeof(unsigned char));
+	write(result_c, &SockPlayer_c, sizeof(unsigned char));
 	if(SockPlayer_c == G_SOCKPLR)
 		{
 			sem_close(clientSemaphore);

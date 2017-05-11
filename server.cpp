@@ -60,6 +60,7 @@
     if(mbs->players[4]!=0)
       SockPlayer|=G_PLR4;
     WRITE(serverSockFD,&SockPlayer,sizeof(unsigned char));
+    write(result, &SockPlayer, sizeof(unsigned char));
     if(SockPlayer==G_SOCKPLR)
     {
       sem_unlink("/mySEM");
