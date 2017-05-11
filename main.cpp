@@ -263,6 +263,7 @@ int main(int argc, char** argv)
 
   while(true)
   {
+    kill(mb->deamonID, SIGUSR1);
     input = goldMine.getKey();
     if(input == 'Q')
     {
