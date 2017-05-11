@@ -739,9 +739,10 @@ void exitFunction()
     mq_unlink("/aditya3");
   if(currentPlayer == 4)
     mq_unlink("/aditya4");
-  //kill(mb->deamonID, SIGHUP);
+  kill(mb->deamonID, SIGHUP);
   sem_post(sem);
   //if(mb->players == 0)
+  kill(mb->deamonID, SIGUSR1);
   if(checker)
   {
     sem_close(sem);
