@@ -245,7 +245,9 @@ int main(int argc, char** argv)
   sem_post(sem);
   //if(mb->deamonID != 0)
   //{
-    kill(mb->deamonID, SIGHUP);
+    //kill(mb->deamonID, SIGHUP);
+    kill(mb->deamonID, SIGUSR1);
+
   //}
   /*for(int i = 0; i < 5; i++)
   {
