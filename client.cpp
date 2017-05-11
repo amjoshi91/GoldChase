@@ -279,11 +279,32 @@ void runClientDeamon(char *addr)
 				 mbc->players[i] = mbc->deamonID;
 			 }
 			 else if(!byte&arr[i] && mbc->players[i] != 0)
-			 	{
+			 {
 				 mbc->players[i] = 0;
-			 	}
-		 	}
-	 	}
+			 }
+		 }
+		 for(int i = 0; i < 5; i++)
+		 {
+			 //write(result, to_string(i).c_str(), to_string(i).length());
+			 if(mbc->players[i] != 0 && mbc->players[i] != mbc->deamonID)
+			 {
+				 //write(result, "in if:", 7);
+				 //write(result, to_string(i).c_str(), to_string(i).length());
+				 WRITE(result_c, to_string(mbc->players[i]).c_str(), to_string(mbc->players[i]).length());
+				 fsync(result_c);
+				 kill(mbc->players[i], SIGUSR1);
+			 }
+		 }
+		 if(byte == G_SOCKPLR)
+		 {
+			 sem_close(clientSemaphore);
+			 sem_unlink("/mySEM");
+			 shm_unlink("/AMJ_mymap");
+			 unsigned char temp=G_SOCKPLR;
+			 WRITE(sockfdClient,&temp,sizeof(unsigned char));
+			 exit(0);
+		 }
+	 }
 	}
 }
 

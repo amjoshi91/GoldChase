@@ -303,6 +303,15 @@
           kill(mbs->players[i], SIGUSR1);
         }
       }
+      if(byte == G_SOCKPLR)
+      {
+        //sem_close(sem);
+        sem_unlink("/mySEM");
+        shm_unlink("/AMJ_mymap");
+        unsigned char temp=G_SOCKPLR;
+        WRITE(serverSockFD,&temp,sizeof(unsigned char));
+        exit(0);
+      }
     }
   }
 }
