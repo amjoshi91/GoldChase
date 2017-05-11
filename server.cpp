@@ -315,7 +315,7 @@
         {
           mbs->players[i] = mbs->deamonID;
         }
-        else if(!byte&arr[i] && mbs->players[i] != 0)
+        else if(!(byte&arr[i]) && mbs->players[i] != 0)
         {
           mbs->players[i] = 0;
         }

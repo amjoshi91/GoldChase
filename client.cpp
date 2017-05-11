@@ -307,7 +307,7 @@ void runClientDeamon(char *addr)
 			 {
 				 mbc->players[i] = mbc->deamonID;
 			 }
-			 else if(!byte&arr[i] && mbc->players[i] != 0)
+			 else if(!(byte&arr[i]) && mbc->players[i] != 0)
 			 {
 				 mbc->players[i] = 0;
 			 }
