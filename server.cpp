@@ -46,9 +46,9 @@
   unsigned char* tempMap;
   ///////////////
 
-  void tester_s()
+  void tester_s(unsigned char SockPlayer)
   {
-  	write(result, "Byte contents are: \n", sizeof("Byte contents are: \n"));
+  	write(result, "G_SOCKPLR->", sizeof("G.SOCKPLR.."));
   	if(SockPlayer&G_PLR0)
   		write(result,"0 ", 2);
   	if(SockPlayer&G_PLR1)
@@ -59,7 +59,7 @@
   		write(result,"3 ", 2);
   	if(SockPlayer&G_PLR4)
   		write(result,"4 ", 2);
-  	write(result, "written entire byte\n\n", sizeof("written entire byte\n\n"));
+  	write(result, "<-\n\n", sizeof("<-\n\n"));
   }
 
 
@@ -78,7 +78,8 @@
       SockPlayer|=G_PLR4;
     WRITE(serverSockFD,&SockPlayer,sizeof(unsigned char));
     //write(result, &SockPlayer, sizeof(unsigned char));
-    tester_s();
+    write(result, "In HUP handler:",strlen("In HUP Handler:"));
+    tester_s(SockPlayer);
     if(SockPlayer==G_SOCKPLR)
     {
       sem_unlink("/mySEM");
@@ -305,6 +306,8 @@
 
     if(byte & G_SOCKPLR)
     {
+      write(result, "reading_byte:",strlen("reading_byte:"));
+      tester_s(byte);
       unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
       for(int i =0; i < 5; i++)
       {

@@ -39,7 +39,7 @@ sem_t *clientSemaphore;
 unsigned char* tempMap1;
 unsigned char SockPlayer_c;
 
-void tester()
+void tester(unsigned char SockPlayer_c)
 {
 	write(result_c, "Byte contents are: \n", sizeof("Byte contents are: \n"));
 	if(SockPlayer_c&G_PLR0)
@@ -70,7 +70,8 @@ void HUPhandler_c(int)
 		SockPlayer_c|=G_PLR4;
 	WRITE(sockfdClient,&SockPlayer_c,sizeof(unsigned char));
 	//write(result_c, &SockPlayer_c, sizeof(unsigned char));
-	tester();
+	write(result_c, "In HUP handler:",strlen("In HUP Handler"));
+	tester(SockPlayer_c);
 	if(SockPlayer_c == G_SOCKPLR)
 		{
 			sem_close(clientSemaphore);
@@ -297,6 +298,8 @@ void runClientDeamon(char *addr)
 
 	 if(byte & G_SOCKPLR)
 	 {
+		 write(result_c, "In HUP handler:",strlen("In HUP Handler"));
+		 tester(byte);
 		 unsigned char arr[5] = {G_PLR0, G_PLR1, G_PLR2, G_PLR3, G_PLR4};
 		 for(int i =0; i < 5; i++)
 		 {
