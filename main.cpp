@@ -176,7 +176,7 @@ int main(int argc, char** argv)
   if(argc > 1)
   {
     runClientDeamon(argv[1]);
-    sleep(3);
+    sleep(2);
   }
   struct sigaction mapRef;
   mapRef.sa_handler = mapRefresh;
@@ -253,7 +253,7 @@ int main(int argc, char** argv)
   }
   Map goldMine((const unsigned char*)mb->map, mb->rows, mb->cols);
   ptr = &goldMine;
-  sleep(2);
+  //sleep(2);
   goldMine.postNotice("Welcome to GoldChase!");
 
   while(true)
