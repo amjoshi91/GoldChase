@@ -741,7 +741,7 @@ void exitFunction()
     mq_unlink("/aditya4");
   kill(mb->deamonID, SIGHUP);
   //if(mb->players == 0)
-  //kill(mb->deamonID, SIGUSR1);
+  kill(mb->deamonID, SIGUSR1);
   if(checker)
   {
     sem_close(sem);
